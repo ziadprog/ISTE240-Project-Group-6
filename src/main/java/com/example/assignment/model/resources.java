@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 public class resources {
     private String name;
-    private String type; // HOTLINE, FOUNDATION, APPLICATION, SUPPORT_GROUP, WEBSITE
+    private String type; // Is it a Hotline, Foundation, etc..
     private String description;
     private String contactInfo;
     private String website;
@@ -69,3 +69,4 @@ public class resources {
         this.email = email;
     }
 }
+
