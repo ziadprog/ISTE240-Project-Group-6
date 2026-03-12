@@ -1,8 +1,6 @@
 package com.example.assignment.model;
 
-import org.springframework.stereotype.Component;
 
-@Component
 
 public class Article {
     private String title;
@@ -33,5 +31,13 @@ public class Article {
         this.content = content;
     }
 
+    private Resources relatedResource;
 
+    public Resources getRelatedResource() {
+        return relatedResource;
+    }
+
+    public void setRelatedResource(Resources relatedResource) {
+        this.relatedResource = relatedResource;
+    }
 }
