@@ -1,16 +1,12 @@
 package com.example.assignment.controllers;
 
-import com.example.assignment.services.Services;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.assignment.services.UserDiaryService;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class MainController {
-
-    @Autowired
-    private Services services;
+    private UserDiaryService services;
 
     @RequestMapping("/index")
     public String homePage(){

@@ -2,22 +2,24 @@ package com.example.assignment.model;
 
 
 public class Diary {
-    private String Title;
+    private String title;
     private String content;
     private String date;
+    private final User user;
 
-    public Diary(String title, String content, String date) {
-        Title = title;
+    public Diary(String title, String content, String date, User user) {
+        this.title = title;
         this.content = content;
         this.date = date;
+        this.user = user;
     }
 
     public String getTitle() {
-        return Title;
+        return title;
     }
 
     public void setTitle(String title) {
-        Title = title;
+        this.title = title;
     }
 
     public String getContent() {
@@ -35,5 +37,7 @@ public class Diary {
     public void setDate(String date) {
         this.date = date;
     }
+
+    public User getUser (){return user;}
 }
 

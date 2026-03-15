@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Diary Entry</title>
+</head>
+<body>
+<h1>Add User and Diary Entry</h1>
+
+<form action="/diaries/add" method="post">
+    <h2>User Information</h2>
+
+    <label>User ID:</label>
+    <input type="text" name="userId" required>
+
+    <label>User Name:</label>
+    <input type="text" name="userName" required>
+
+    <label>Email:</label>
+    <input type="text" name="email" required>
+
+    <h2>Diary Information</h2>
+
+    <label>Title:</label>
+    <input type="text" name="title" required>
+
+    <label>Content:</label>
+    <input type="text" name="content" required>
+
+    <label>Date:</label>
+    <input type="text" name="date" required>
+
+    <button type="submit">Add Diary Entry</button>
+</form>
+
+<br>
+<a href="/index">Back to Home</a>
+</body>
+</html>
