@@ -1,7 +1,7 @@
-package com.example.assignment2.service;
+package com.example.assignment.services;
 
-import com.example.assignment2.model.Category;
-import com.example.assignment2.model.Resource;
+import com.example.assignment.model.Category;
+import com.example.assignment.model.Resource;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 

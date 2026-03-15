@@ -23,8 +23,6 @@
         <th>Article Title</th>
         <th>Author</th>
         <th>Content</th>
-        <th>Linked Resource</th>
-        <th>Additional Information</th>
     </tr>
     </thead>
     <tbody>
@@ -33,18 +31,6 @@
             <td><strong>{{title}}</strong></td>
             <td>{{author}}</td>
             <td>{{{content}}}</td>
-
-            {{#relatedResource}}
-                <td>{{name}} ({{type}})</td>
-                <td>
-                    {{#phoneNumber}}Tel: {{phoneNumber}}{{/phoneNumber}}
-                    {{#website}}<a href="http://{{website}}">{{website}}</a>{{/website}}
-                </td>
-            {{/relatedResource}}
-
-            {{^relatedResource}}
-                <td colspan="2" style="color: gray;">General Information</td>
-            {{/relatedResource}}
         </tr>
     {{/articles}}
     </tbody>

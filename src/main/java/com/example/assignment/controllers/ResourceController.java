@@ -1,8 +1,8 @@
-package com.example.assignment2.controller;
+package com.example.assignment.controllers;
 
-import com.example.assignment2.model.Category;
-import com.example.assignment2.model.Resource;
-import com.example.assignment2.service.WellnessService;
+import com.example.assignment.model.Category;
+import com.example.assignment.model.Resource;
+import com.example.assignment.services.WellnessService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -45,11 +45,5 @@ public class ResourceController {
         wellnessService.addResource(resource);
 
         return "redirect:/add/success/resource";
-    }
-
-    @GetMapping("/add/success/{entityName}")
-    public String showSuccessPage(@PathVariable String entityName, Model model) {
-        model.addAttribute("entityName", entityName);
-        return "success";
     }
 }

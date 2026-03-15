@@ -1,4 +1,4 @@
-package com.example.assignment2.model;
+package com.example.assignment.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ public class Category {
     private int id;
     private String name;
     private String description;
-    private List<Resource> resources;
+    private List<Resources> resources;
 
     public Category() {
         this.resources = new ArrayList<>();
@@ -45,11 +45,11 @@ public class Category {
         this.description = description;
     }
 
-    public List<Resource> getResources() {
+    public List<Resources> getResources() {
         return resources;
     }
 
-    public void setResources(List<Resource> resources) {
+    public void setResources(List<Resources> resources) {
         this.resources = resources;
     }
 }

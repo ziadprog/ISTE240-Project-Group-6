@@ -30,14 +30,4 @@ public class Article {
     public void setContent(String content) {
         this.content = content;
     }
-
-    private Resources relatedResource;
-
-    public Resources getRelatedResource() {
-        return relatedResource;
-    }
-
-    public void setRelatedResource(Resources relatedResource) {
-        this.relatedResource = relatedResource;
-    }
 }

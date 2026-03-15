@@ -1,10 +1,7 @@
 package com.example.assignment.services;
 
 
-import com.example.assignment.model.Article;
-import com.example.assignment.model.Diary;
-import com.example.assignment.model.Resources;
-import com.example.assignment.model.User;
+import com.example.assignment.model.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -64,7 +61,6 @@ public class MentalHealthService {
         article1.setTitle("What to do in a Crisis");
         article1.setAuthor("France Bridges");
         article1.setContent("<a href=\"/Crisis_Article.html\">If you feel overwhelmed, Focus on the next Step</a>");
-        article1.setRelatedResource(hotline);
         articles.add(article1);
 
 
@@ -72,14 +68,12 @@ public class MentalHealthService {
         article2.setTitle("Managing Exam Anxiety");
         article2.setAuthor("Dr. Aris");
         article2.setContent("<a href=\"/Anxiety_Management.html\">Deep breathing and time management are key tools for student");
-        article2.setRelatedResource(foundation2);
         articles.add(article2);
 
         Article article3 = new Article();
         article3.setTitle("The Benefits of Mindfulness");
         article3.setAuthor("Kendra Cherry");
         article3.setContent("<a href=\"/Mindfulness_Benefits.html\">Mindfulness involves being fully present in the moment");
-        article3.setRelatedResource(foundation3);
         articles.add(article3);
     }
 
