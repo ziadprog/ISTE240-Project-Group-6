@@ -1,12 +1,9 @@
 package com.example.assignment.model;
 
-import org.springframework.stereotype.Component;
 
-@Component
-
-public class resources {
+public class Resources {
     private String name;
-    private String type; // Is it a Hotline, Foundation, etc..
+    private String type; 
     private String description;
     private String contactInfo;
     private String website;
@@ -69,4 +66,3 @@ public class resources {
         this.email = email;
     }
 }
-
