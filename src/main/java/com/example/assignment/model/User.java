@@ -1,15 +1,11 @@
 package com.example.assignment.model;
 
+import org.springframework.stereotype.Component;
+
 public class User {
     private String userId;
     private String userName;
     private String email;
-
-    public User(String userId, String userName, String email) {
-        this.userId = userId;
-        this.userName = userName;
-        this.email = email;
-    }
 
     public String getUserId() {
         return userId;
