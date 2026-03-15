@@ -1,7 +1,7 @@
 package com.example.assignment.controllers;
 
 import com.example.assignment.model.Article;
-import com.example.assignment.Services.MentalHealthService;
+import com.example.assignment.services.MentalHealthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
