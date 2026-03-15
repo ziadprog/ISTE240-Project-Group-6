@@ -1,9 +1,6 @@
 package com.example.assignment.model;
 
-import org.springframework.stereotype.Component;
-import javax.annotation.PostConstruct;
 
-@Component
 public class SelfAssessment {
 
     private String username;
@@ -12,31 +9,29 @@ public class SelfAssessment {
     private String result;
     private String recommendedAction;
 
-    private resources resource;
+    private Resources resource;
     private Article article;
 
-    @PostConstruct
-    public void connectAll() {
-        resource = new resources();
-        resource.setName("Stress Hotline");
+    public SelfAssessment(String username, int stresspoints) {
+        this.username = username;
+        this.stresspoints = stresspoints;
+
+        this.resource = new Resources();
+        this.article = new Article();
+
+        this.resource.setName("Stress Hotline");
         if (this.stresspoints > 5) {
-            resource.setType("HOTLINE");
-            resource.setPhoneNumber("1-800-STRESS");
+            this.resource.setType("HOTLINE");
+            this.resource.setPhoneNumber("1-800-STRESS");
         }
 
-        article = new Article();
-        article.setTitle("Managing Stress");
+        this.article.setTitle("Managing Stress");
         if (this.stresspoints > 5) {
-            article.setAuthor("Dr. Johnson");
-            article.setContent("Tips for high stress...");
+            this.article.setAuthor("Dr. Johnson");
+            this.article.setContent("Tips for high stress...");
         }
 
-        this.recommendedAction = "Call " + resource.getName() +
-                " and read " + article.getTitle();
-
-        System.out.println("Connected: " + this.username +
-                " -> " + resource.getName() +
-                " -> " + article.getTitle());
+        this.recommendedAction = "Call " + resource.getName() + " and read " + article.getTitle();
     }
 
     public String getUsername() {
@@ -79,7 +74,7 @@ public class SelfAssessment {
         this.recommendedAction = recommendedAction;
     }
 
-    public resources getResource() {
+    public Resources getResource() {
         return resource;
     }
 
