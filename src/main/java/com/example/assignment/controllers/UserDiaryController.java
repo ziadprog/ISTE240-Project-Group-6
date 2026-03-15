@@ -2,17 +2,17 @@ package com.example.assignment.controllers;
 
 import com.example.assignment.model.Diary;
 import com.example.assignment.model.User;
-import com.example.assignment.services.UserDiaryService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import com.example.assignment.services.MentalHealthService;
 
 @Controller
 public class UserDiaryController {
 
-    private UserDiaryService service;
+    private MentalHealthService service;
 
-    public UserDiaryController(UserDiaryService service) {
+    public UserDiaryController(MentalHealthService service) {
         this.service = service;
     }
 
@@ -43,9 +43,10 @@ public class UserDiaryController {
         return "redirect:/add/success/diary";
     }
 
-    @GetMapping("/add/success/{entityName}")
-    public String addSuccess(@PathVariable String entityName, Model model) {
-        model.addAttribute("entityName", entityName);
-        return "success";
-    }
+
+    //@GetMapping("/add/success/{entityName}")
+    //public String addSuccess(@PathVariable String entityName, Model model) {
+    //    model.addAttribute("entityName", entityName);
+    //    return "success";
+    //}
 }

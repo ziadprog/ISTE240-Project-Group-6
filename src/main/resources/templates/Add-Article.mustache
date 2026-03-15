@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Add New Article</title></head>
+<body>
+<h2>Create a New Articles</h2>
+<form method="POST" action="/article/add">
+    <div class="field">
+        <label>Article Title</label>
+        <input type="text" name="title" placeholder="Enter Title" required>
+    </div>
+
+    <div class="field">
+        <label>Author</label>
+        <input type="text" name="author" placeholder="Author Name" required>
+    </div>
+
+    <div class="field">
+        <label>Content</label>
+        <textarea name="content" placeholder="Article Content" required></textarea>
+    </div>
+
+    <button type="submit">Submit Article</button>
+</form>
+<br>
+<a href="/articles">Back to List</a>
+</body>
+</html>
