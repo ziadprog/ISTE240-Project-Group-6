@@ -1,20 +1,29 @@
+package com.example.assignment.model;
 
 public class Resource {
 
     private int id;
-    private String title;
+    private String name;
     private String type;
-    private String shortDescription;
+    private String description;
+    private String contactInfo;
+    private String website;
+    private String phoneNumber;
+    private String email;
     private Category category;
 
     public Resource() {
     }
 
-    public Resource(int id, String title, String type, String shortDescription, Category category) {
+    public Resource(int id, String name, String type, String description, String contactInfo, String website, String phoneNumber, String email, Category category) {
         this.id = id;
-        this.title = title;
+        this.name = name;
         this.type = type;
-        this.shortDescription = shortDescription;
+        this.description = description;
+        this.contactInfo = contactInfo;
+        this.website = website;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
         this.category = category;
     }
 
@@ -25,50 +34,6 @@ public class Resource {
     public void setId(int id) {
         this.id = id;
     }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-}
-package com.example.assignment.model;
-
-
-public class Resources {
-    private String name;
-    private String type; // Is it a Hotline, Foundation, etc..
-    private String description;
-    private String contactInfo;
-    private String website;
-    private String phoneNumber;
-    private String email;
 
     public String getName() {
         return name;
@@ -125,5 +90,12 @@ public class Resources {
     public void setEmail(String email) {
         this.email = email;
     }
-}
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+}
