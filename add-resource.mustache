@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Resource</title>
+</head>
+<body>
+    <h1>Add Mental Health Resource</h1>
+
+    <a href="/">Home</a> |
+    <a href="/resources">View Resources</a>
+
+    <br><br>
+
+    <form action="/resources/add" method="post">
+        <label>Title:</label><br>
+        <input type="text" name="title" required><br><br>
+
+        <label>Type:</label><br>
+        <input type="text" name="type" required><br><br>
+
+        <label>Short Description:</label><br>
+        <input type="text" name="shortDescription" required><br><br>
+
+        <label>Category:</label><br>
+        <select name="categoryId" required>
+            {{#categories}}
+            <option value="{{id}}">{{name}}</option>
+            {{/categories}}
+        </select><br><br>
+
+        <button type="submit">Add Resource</button>
+    </form>
+</body>
+</html>
