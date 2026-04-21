@@ -1,17 +1,34 @@
 package com.example.assignment.model;
 
+import jakarta.persistence.*;
 
+@Entity
 public class Diary {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String title;
     private String content;
     private String date;
-    private final User user;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public Diary() {
+    }
 
     public Diary(String title, String content, String date, User user) {
         this.title = title;
         this.content = content;
         this.date = date;
         this.user = user;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -38,6 +55,11 @@ public class Diary {
         this.date = date;
     }
 
-    public User getUser (){return user;}
-}
+    public User getUser() {
+        return user;
+    }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+}
