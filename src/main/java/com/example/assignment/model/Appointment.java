@@ -6,24 +6,26 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Diary {
+public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
-    private String content;
+    private String description;
     private String date;
+    private String time;
     private Long userId;
 
-    public Diary() {
+    public Appointment() {
     }
 
-    public Diary(String title, String content, String date, Long userId) {
+    public Appointment(String title, String description, String date, String time, Long userId) {
         this.title = title;
-        this.content = content;
+        this.description = description;
         this.date = date;
+        this.time = time;
         this.userId = userId;
     }
 
@@ -39,12 +41,12 @@ public class Diary {
         this.title = title;
     }
 
-    public String getContent() {
-        return content;
+    public String getDescription() {
+        return description;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getDate() {
@@ -53,6 +55,14 @@ public class Diary {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public Long getUserId() {
