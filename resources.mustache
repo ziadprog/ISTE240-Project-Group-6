@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mental Health Resources</title>
+</head>
+<body>
+    <h1>Mental Health Awareness Resources</h1>
+
+    <a href="/">Home</a> |
+    <a href="/resources/add">Add Resource</a>
+
+    <br><br>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Category</th>
+        </tr>
+
+        {{#resources}}
+        <tr>
+            <td>{{id}}</td>
+            <td>{{title}}</td>
+            <td>{{type}}</td>
+            <td>{{shortDescription}}</td>
+            <td>{{category.name}}</td>
+        </tr>
+        {{/resources}}
+    </table>
+</body>
+</html>
