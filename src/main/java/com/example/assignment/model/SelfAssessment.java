@@ -1,7 +1,15 @@
 package com.example.assignment.model;
 
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "assessments")
 public class SelfAssessment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String username;
     private int stresspoints;
@@ -9,76 +17,43 @@ public class SelfAssessment {
     private String result;
     private String recommendedAction;
 
+    @ManyToOne
+    @JoinColumn(name = "resource_id")
     private Resources resource;
+
+    @ManyToOne
+    @JoinColumn(name = "article_id")
     private Article article;
+
+    // Constructors
+    public SelfAssessment() {}
 
     public SelfAssessment(String username, int stresspoints) {
         this.username = username;
         this.stresspoints = stresspoints;
-
-        this.resource = new Resources();
-        this.article = new Article();
-
-        this.resource.setName("Stress Hotline");
-        if (this.stresspoints > 5) {
-            this.resource.setType("HOTLINE");
-            this.resource.setPhoneNumber("1-800-STRESS");
-        }
-
-        this.article.setTitle("Managing Stress");
-        if (this.stresspoints > 5) {
-            this.article.setAuthor("Dr. Johnson");
-            this.article.setContent("Tips for high stress...");
-        }
-
-        this.recommendedAction = "Call " + resource.getName() + " and read " + article.getTitle();
     }
 
-    public String getUsername() {
-        return username;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public int getstresspoints() {
-        return stresspoints;
-    }
+    public int getStresspoints() { return stresspoints; }
+    public void setStresspoints(int stresspoints) { this.stresspoints = stresspoints; }
 
-    public void setstresspoints(int stresspoints) {
-        this.stresspoints = stresspoints;
-    }
+    public int getAnxietypoints() { return anxietypoints; }
+    public void setAnxietypoints(int anxietypoints) { this.anxietypoints = anxietypoints; }
 
-    public int getanxietypoints() {
-        return anxietypoints;
-    }
+    public String getResult() { return result; }
+    public void setResult(String result) { this.result = result; }
 
-    public void setanxietypoints(int anxietypoints) {
-        this.anxietypoints = anxietypoints;
-    }
+    public String getRecommendedAction() { return recommendedAction; }
+    public void setRecommendedAction(String recommendedAction) { this.recommendedAction = recommendedAction; }
 
-    public String getResult() {
-        return result;
-    }
+    public Resources getResource() { return resource; }
+    public void setResource(Resources resource) { this.resource = resource; }
 
-    public void setresult(String result) {
-        this.result = result;
-    }
-
-    public String getRecommendedAction() {
-        return recommendedAction;
-    }
-
-    public void setRecommendedAction(String recommendedAction) {
-        this.recommendedAction = recommendedAction;
-    }
-
-    public Resources getResource() {
-        return resource;
-    }
-
-    public Article getArticle() {
-        return article;
-    }
+    public Article getArticle() { return article; }
+    public void setArticle(Article article) { this.article = article; }
 }
