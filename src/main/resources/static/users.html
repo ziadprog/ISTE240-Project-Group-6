@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: Arial,serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        input { margin: 5px 0; padding: 5px; width: 300px; }
+        button { margin: 5px; padding: 5px 10px; cursor: pointer; }
+        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }
+        nav { margin: 20px 0; padding: 10px; background: #f0f0f0; }
+        nav a { margin: 0 10px; text-decoration: none; color: #333; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/index.html">Home</a> |
+    <a href="/articles.html">Articles</a> |
+    <a href="/resources.html">Resources</a> |
+    <a href="/users.html">Users</a> |
+    <a href="/assessments.html">Assessments</a>
+</nav>
+
+<header>Users</header>
+
+<input type="text" id="search" placeholder="Search by name..." onkeyup="doSearch()">
+
+<div class="box">
+    <input type="hidden" id="editId">
+    <input type="text" id="userId" placeholder="User ID">
+    <input type="text" id="userName" placeholder="Full Name">
+    <input type="email" id="email" placeholder="Email">
+    <button id="saveBtn">Add User</button>
+</div>
+
+<table id="list">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>User ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<br>
+<a href="/index.html">Return to Home</a>
+
+<script>
+    const API = "http://localhost:8080/api/users";
+
+    function load() {
+        $.get(API, function(data) {
+            let html = "";
+            for(let u of data) {
+                html += '<tr>';
+                html += '<td>' + u.id + '</td>';
+                html += '<td>' + u.userId + '</td>';
+                html += '<td>' + u.userName + '</td>';
+                html += '<td>' + u.email + '</td>';
+                html += '<td><button onclick="edit(' + u.id + ')">Edit</button> <button onclick="del(' + u.id + ')">Delete</button></td>';
+                html += '</tr>';
+            }
+            $("#list tbody").html(html);
+        });
+    }
+
+    $("#saveBtn").click(function() {
+        let id = $("#editId").val();
+        let item = {
+            userId: $("#userId").val(),
+            userName: $("#userName").val(),
+            email: $("#email").val()
+        };
+
+        if(id) {
+            $.ajax({
+                url: `${API}/${id}`,
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(item),
+                success: function() {
+                    $("#editId, #userId, #userName, #email").val("");
+                    $("#saveBtn").text("Add User");
+                    load();
+                }
+            });
+        } else {
+            $.ajax({
+                url: API,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(item),
+                success: function() {
+                    $("#userId, #userName, #email").val("");
+                    load();
+                }
+            });
+        }
+    });
+
+    window.edit = function(id) {
+        $.get(`${API}/${id}`, function(u) {
+            $("#editId").val(u.id);
+            $("#userId").val(u.userId);
+            $("#userName").val(u.userName);
+            $("#email").val(u.email);
+            $("#saveBtn").text("Update User");
+        });
+    };
+
+    window.del = function(id) {
+        if(confirm("Delete?")) {
+            $.ajax({
+                url: `${API}/${id}`,
+                method: "DELETE",
+                success: function() {
+                    load();
+                }
+            });
+        }
+    };
+
+    window.doSearch = function() {
+        let q = $("#search").val();
+        if(q) {
+            $.get(`${API}/search?name=${q}`, function(data) {
+                let html = "";
+                for(let u of data) {
+                    html += '<tr>';
+                    html += '<td>' + u.id + '</td>';
+                    html += '<td>' + u.userId + '</td>';
+                    html += '<td>' + u.userName + '</td>';
+                    html += '<td>' + u.email + '</td>';
+                    html += '<td><button onclick="edit(' + u.id + ')">Edit</button> <button onclick="del(' + u.id + ')">Delete</button></td>';
+                    html += '</tr>';
+                }
+                $("#list tbody").html(html);
+            });
+        } else {
+            load();
+        }
+    };
+
+    load();
+</script>
+</body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Users</title>-->
+<!--    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>-->
+<!--    <style>-->
+<!--        body { font-family: Arial,serif; margin: 20px; }-->
+<!--        table { border-collapse: collapse; width: 100%; }-->
+<!--        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }-->
+<!--        th { background-color: #f0f0f0; }-->
+<!--        input { margin: 5px 0; padding: 5px; width: 300px; }-->
+<!--        button { margin: 5px; padding: 5px 10px; cursor: pointer; }-->
+<!--        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }-->
+<!--        nav { margin: 20px 0; padding: 10px; background: #f0f0f0; }-->
+<!--        nav a { margin: 0 10px; text-decoration: none; color: #333; }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<nav>-->
+<!--    <a href="/index.html">Home</a> |-->
+<!--    <a href="/articles.html">Articles</a> |-->
+<!--    <a href="/resources.html">Resources</a> |-->
+<!--    <a href="/users.html">Users</a> |-->
+<!--    <a href="/assessments.html">Assessments</a>-->
+<!--</nav>-->
+
+<!--<header>Users</header>-->
+
+<!--<input type="text" id="search" placeholder="Search by name..." onkeyup="doSearch()">-->
+
+<!--<div class="box">-->
+<!--    <input type="hidden" id="editId">-->
+<!--    <input type="text" id="userId" placeholder="User ID">-->
+<!--    <input type="text" id="userName" placeholder="Full Name">-->
+<!--    <input type="email" id="email" placeholder="Email">-->
+<!--    <button id="saveBtn">Add User</button>-->
+<!--</div>-->
+
+<!--<table id="list">-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <th>ID</th>-->
+<!--        <th>User ID</th>-->
+<!--        <th>Name</th>-->
+<!--        <th>Email</th>-->
+<!--        <th>Actions</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody id="usersTableBody"></tbody>-->
+<!--</table>-->
+
+<!--<br>-->
+<!--<a href="/index.html">Return to Home</a>-->
+
+<!--<script>-->
+<!--    const API = "http://localhost:8080/api/users";-->
+
+<!--    function load() {-->
+<!--        $.get(API, function(data) {-->
+<!--            let html = "";-->
+<!--            for(let u of data) {-->
+<!--                html += '</table>';-->
+<!--                html += '<td>' + (u.id || '') + '</td>';-->
+<!--                html += '<td>' + (u.userId || '') + '</td>';-->
+<!--                html += '<td>' + (u.userName || '') + '</td>';-->
+<!--                html += '<td>' + (u.email || '') + '</td>';-->
+<!--                html += '<td><button onclick="edit(' + u.id + ')">Edit</button> <button onclick="del(' + u.id + ')">Delete</button></td>';-->
+<!--                html += '</tr>';-->
+<!--            }-->
+<!--            $("#usersTableBody").html(html);-->
+<!--        });-->
+<!--    }-->
+
+<!--    function resetForm() {-->
+<!--        $("#editId").val("");-->
+<!--        $("#userId").val("");-->
+<!--        $("#userName").val("");-->
+<!--        $("#email").val("");-->
+<!--        $("#saveBtn").text("Add User");-->
+<!--    }-->
+
+<!--    $("#saveBtn").click(function() {-->
+<!--        let id = $("#editId").val();-->
+<!--        let item = {-->
+<!--            userId: $("#userId").val(),-->
+<!--            userName: $("#userName").val(),-->
+<!--            email: $("#email").val()-->
+<!--        };-->
+
+<!--        if(id) {-->
+<!--            $.ajax({-->
+<!--                url: `${API}/${id}`,-->
+<!--                method: "PUT",-->
+<!--                contentType: "application/json",-->
+<!--                data: JSON.stringify(item),-->
+<!--                success: function() {-->
+<!--                    resetForm();-->
+<!--                    load();-->
+<!--                    alert("User updated!");-->
+<!--                }-->
+<!--            });-->
+<!--        } else {-->
+<!--            $.ajax({-->
+<!--                url: API,-->
+<!--                method: "POST",-->
+<!--                contentType: "application/json",-->
+<!--                data: JSON.stringify(item),-->
+<!--                success: function() {-->
+<!--                    resetForm();-->
+<!--                    load();-->
+<!--                    alert("User added!");-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
+<!--    });-->
+
+<!--    window.edit = function(id) {-->
+<!--        $.get(`${API}/${id}`, function(u) {-->
+<!--            $("#editId").val(u.id);-->
+<!--            $("#userId").val(u.userId);-->
+<!--            $("#userName").val(u.userName);-->
+<!--            $("#email").val(u.email);-->
+<!--            $("#saveBtn").text("Update User");-->
+<!--        });-->
+<!--    };-->
+
+<!--    window.del = function(id) {-->
+<!--        if(confirm("Delete this user?")) {-->
+<!--            $.ajax({-->
+<!--                url: `${API}/${id}`,-->
+<!--                method: "DELETE",-->
+<!--                success: function() {-->
+<!--                    load();-->
+<!--                    alert("User deleted!");-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
+<!--    };-->
+
+<!--    window.doSearch = function() {-->
+<!--        let q = $("#search").val();-->
+<!--        if(q) {-->
+<!--            $.get(`${API}/search?name=${q}`, function(data) {-->
+<!--                let html = "";-->
+<!--                for(let u of data) {-->
+<!--                    html += '<tr>';-->
+<!--                    html += '<td>' + (u.id || '') + '</td>';-->
+<!--                    html += '<td>' + (u.userId || '') + '</td>';-->
+<!--                    html += '<td>' + (u.userName || '') + '</td>';-->
+<!--                    html += '<td>' + (u.email || '') + '</td>';-->
+<!--                    html += '<td><button onclick="edit(' + u.id + ')">Edit</button> <button onclick="del(' + u.id + ')">Delete</button></td>';-->
+<!--                    html += '</tr>';-->
+<!--                }-->
+<!--                $("#usersTableBody").html(html);-->
+<!--            });-->
+<!--        } else {-->
+<!--            load();-->
+<!--        }-->
+<!--    };-->
+
+<!--    load();-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+<!--&lt;!&ndash;<!DOCTYPE html>&ndash;&gt;-->
+<!--&lt;!&ndash;<html lang="en">&ndash;&gt;-->
+<!--&lt;!&ndash;<head>&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta charset="UTF-8">&ndash;&gt;-->
+<!--&lt;!&ndash;    <title>Users</title>&ndash;&gt;-->
+<!--&lt;!&ndash;    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>&ndash;&gt;-->
+<!--&lt;!&ndash;    <style>&ndash;&gt;-->
+<!--&lt;!&ndash;        body { font-family: Arial,serif; margin: 20px; }&ndash;&gt;-->
+<!--&lt;!&ndash;        table { border-collapse: collapse; width: 100%; }&ndash;&gt;-->
+<!--&lt;!&ndash;        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }&ndash;&gt;-->
+<!--&lt;!&ndash;        th { background-color: #f0f0f0; }&ndash;&gt;-->
+<!--&lt;!&ndash;        input { margin: 5px 0; padding: 5px; width: 300px; }&ndash;&gt;-->
+<!--&lt;!&ndash;        button { margin: 5px; padding: 5px 10px; cursor: pointer; }&ndash;&gt;-->
+<!--&lt;!&ndash;        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }&ndash;&gt;-->
+<!--&lt;!&ndash;        nav { margin: 20px 0; padding: 10px; background: #f0f0f0; }&ndash;&gt;-->
+<!--&lt;!&ndash;        nav a { margin: 0 10px; text-decoration: none; color: #333; }&ndash;&gt;-->
+<!--&lt;!&ndash;    </style>&ndash;&gt;-->
+<!--&lt;!&ndash;</head>&ndash;&gt;-->
+<!--&lt;!&ndash;<body>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<nav>&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/index.html">Home</a> |&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/articles.html">Articles</a> |&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/resources.html">Resources</a> |&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/users.html">Users</a> |&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/assessments.html">Assessments</a>&ndash;&gt;-->
+<!--&lt;!&ndash;</nav>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<header>Users</header>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<input type="text" id="search" placeholder="Search by name..." onkeyup="doSearch()">&ndash;&gt;-->
+
+<!--&lt;!&ndash;<div class="box">&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="hidden" id="editId">&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="text" id="userId" placeholder="User ID">&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="text" id="userName" placeholder="Full Name">&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="email" id="email" placeholder="Email">&ndash;&gt;-->
+<!--&lt;!&ndash;    <button id="saveBtn">Add User</button>&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<table id="list">&ndash;&gt;-->
+<!--&lt;!&ndash;    <thead>&ndash;&gt;-->
+<!--&lt;!&ndash;    <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>ID</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>User ID</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>Name</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>Email</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>Actions</th>&ndash;&gt;-->
+<!--&lt;!&ndash;    </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;    </thead>&ndash;&gt;-->
+<!--&lt;!&ndash;    <tbody></tbody>&ndash;&gt;-->
+<!--&lt;!&ndash;</table>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<br>&ndash;&gt;-->
+<!--&lt;!&ndash;<a href="/index.html">Return to Home</a>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<script>&ndash;&gt;-->
+<!--&lt;!&ndash;    const API = "http://localhost:8080/api/users";&ndash;&gt;-->
+
+<!--&lt;!&ndash;    function load() {&ndash;&gt;-->
+<!--&lt;!&ndash;        $.get(API, function(data) {&ndash;&gt;-->
+<!--&lt;!&ndash;            let html = "";&ndash;&gt;-->
+<!--&lt;!&ndash;            for(let u of data) {&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<tr>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td>' + u.id + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td>' + u.userId + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td>' + u.userName + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td>' + u.email + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td><button onclick="edit(' + u.id + ')">Edit</button> <button onclick="del(' + u.id + ')">Delete</button></td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '</tr>';&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#list tbody").html(html);&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    $("#saveBtn").click(function() {&ndash;&gt;-->
+<!--&lt;!&ndash;        let id = $("#editId").val();&ndash;&gt;-->
+<!--&lt;!&ndash;        let item = {&ndash;&gt;-->
+<!--&lt;!&ndash;            userId: $("#userId").val(),&ndash;&gt;-->
+<!--&lt;!&ndash;            userName: $("#userName").val(),&ndash;&gt;-->
+<!--&lt;!&ndash;            email: $("#email").val()&ndash;&gt;-->
+<!--&lt;!&ndash;        };&ndash;&gt;-->
+
+<!--&lt;!&ndash;        if(id) {&ndash;&gt;-->
+<!--&lt;!&ndash;            $.ajax({&ndash;&gt;-->
+<!--&lt;!&ndash;                url: `${API}/${id}`,&ndash;&gt;-->
+<!--&lt;!&ndash;                method: "PUT",&ndash;&gt;-->
+<!--&lt;!&ndash;                contentType: "application/json",&ndash;&gt;-->
+<!--&lt;!&ndash;                data: JSON.stringify(item),&ndash;&gt;-->
+<!--&lt;!&ndash;                success: function() {&ndash;&gt;-->
+<!--&lt;!&ndash;                    $("#editId, #userId, #userName, #email").val("");&ndash;&gt;-->
+<!--&lt;!&ndash;                    $("#saveBtn").text("Add User");&ndash;&gt;-->
+<!--&lt;!&ndash;                    load();&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;            });&ndash;&gt;-->
+<!--&lt;!&ndash;        } else {&ndash;&gt;-->
+<!--&lt;!&ndash;            $.ajax({&ndash;&gt;-->
+<!--&lt;!&ndash;                url: API,&ndash;&gt;-->
+<!--&lt;!&ndash;                method: "POST",&ndash;&gt;-->
+<!--&lt;!&ndash;                contentType: "application/json",&ndash;&gt;-->
+<!--&lt;!&ndash;                data: JSON.stringify(item),&ndash;&gt;-->
+<!--&lt;!&ndash;                success: function() {&ndash;&gt;-->
+<!--&lt;!&ndash;                    $("#userId, #userName, #email").val("");&ndash;&gt;-->
+<!--&lt;!&ndash;                    load();&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;            });&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+
+<!--&lt;!&ndash;    window.edit = function(id) {&ndash;&gt;-->
+<!--&lt;!&ndash;        $.get(`${API}/${id}`, function(u) {&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#editId").val(u.id);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#userId").val(u.userId);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#userName").val(u.userName);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#email").val(u.email);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#saveBtn").text("Update User");&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+<!--&lt;!&ndash;    };&ndash;&gt;-->
+
+<!--&lt;!&ndash;    window.del = function(id) {&ndash;&gt;-->
+<!--&lt;!&ndash;        if(confirm("Delete?")) {&ndash;&gt;-->
+<!--&lt;!&ndash;            $.ajax({&ndash;&gt;-->
+<!--&lt;!&ndash;                url: `${API}/${id}`,&ndash;&gt;-->
+<!--&lt;!&ndash;                method: "DELETE",&ndash;&gt;-->
+<!--&lt;!&ndash;                success: function() {&ndash;&gt;-->
+<!--&lt;!&ndash;                    load();&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;            });&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    };&ndash;&gt;-->
+
+<!--&lt;!&ndash;    window.doSearch = function() {&ndash;&gt;-->
+<!--&lt;!&ndash;        let q = $("#search").val();&ndash;&gt;-->
+<!--&lt;!&ndash;        if(q) {&ndash;&gt;-->
+<!--&lt;!&ndash;            $.get(`${API}/search?name=${q}`, function(data) {&ndash;&gt;-->
+<!--&lt;!&ndash;                let html = "";&ndash;&gt;-->
+<!--&lt;!&ndash;                for(let u of data) {&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<tr>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td>' + u.id + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td>' + u.userId + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td>' + u.userName + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td>' + u.email + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td><button onclick="edit(' + u.id + ')">Edit</button> <button onclick="del(' + u.id + ')">Delete</button></td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '</tr>';&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;                $("#list tbody").html(html);&ndash;&gt;-->
+<!--&lt;!&ndash;            });&ndash;&gt;-->
+<!--&lt;!&ndash;        } else {&ndash;&gt;-->
+<!--&lt;!&ndash;            load();&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    };&ndash;&gt;-->
+
+<!--&lt;!&ndash;    load();&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+<!--&lt;!&ndash;</body>&ndash;&gt;-->
+<!--&lt;!&ndash;</html>&ndash;&gt;-->
+
+
+<!--&lt;!&ndash;&lt;!&ndash;<!DOCTYPE html>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;<html lang="en">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;<head>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <meta charset="UTF-8">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <title>Self Assessments</title>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <style>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        body { font-family: Arial; margin: 20px; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        table { border-collapse: collapse; width: 100%; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        th { background-color: #f0f0f0; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        input { margin: 5px 0; padding: 5px; width: 300px; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        button { margin: 5px; padding: 5px 10px; cursor: pointer; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        nav { margin: 20px 0; padding: 10px; background: #f0f0f0; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        nav a { margin: 0 10px; text-decoration: none; color: #333; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    </style>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</head>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;<body>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<nav>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/index.html">Home</a> |&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/articles.html">Articles</a> |&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/resources.html">Resources</a> |&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/users.html">Users</a> |&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/assessments.html">Assessments</a>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</nav>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<header>Self Assessments</header>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<input type="text" id="search" placeholder="Search by username..." onkeyup="doSearch()">&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<div class="box">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="hidden" id="editId">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="text" id="username" placeholder="Username">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="number" id="stress" placeholder="Stress Points (1-10)">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="number" id="anxiety" placeholder="Anxiety Points (1-10)">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="text" id="result" placeholder="Result">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <button id="saveBtn">Add Assessment</button>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</div>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<table id="list">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <thead>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <tr>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>ID</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Username</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Stress</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Anxiety</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Result</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Actions</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    </tr>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    </thead>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <tbody></tbody>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</table>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<br>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;<a href="/index.html">Return to Home</a>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<script>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    const API = "http://localhost:8080/api/assessments";&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    function load() {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        $.get(API, function(data) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            let html = "";&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            for(let a of data) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<tr>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + a.id + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + a.username + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (a.stresspoints || 0) + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (a.anxietypoints || 0) + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (a.result || '') + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td><button onclick="edit(' + a.id + ')">Edit</button> <button onclick="del(' + a.id + ')">Delete</button></td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '</tr>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#list tbody").html(html);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        });&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    }&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    $("#saveBtn").click(function() {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        let id = $("#editId").val();&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        let item = {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            title: $("#title").val(),&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            author: $("#author").val(),&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            content: $("#content").val()&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        };&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;        $.ajax({&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            url: id ? `${API}/${id}` : API,&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            method: id ? "PUT" : "POST",&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            contentType: "application/json",&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            data: JSON.stringify(item),&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            success: function() {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                // Reset form&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                $("#editId").val("");&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                $("#title").val("");&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                $("#author").val("");&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                $("#content").val("");&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                $("#saveBtn").text("Add Article");&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                load();&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        });&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    });&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    window.edit = function(id) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        $.get(`${API}/${id}`, function(a) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#editId").val(a.id);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#username").val(a.username);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#stress").val(a.stresspoints);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#anxiety").val(a.anxietypoints);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#result").val(a.result);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#saveBtn").text("Update");&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        });&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    };&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    window.del = function(id) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        if(confirm("Delete?")) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $.ajax({ url: `${API}/${id}`, method: "DELETE", complete: load });&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    };&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    window.doSearch = function() {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        let q = $("#search").val();&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        $.get(q ? `${API}/search?username=${q}` : API, function(data) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            let html = "";&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            for(let a of data) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<tr>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + a.id + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + a.username + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (a.stresspoints || 0) + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (a.anxietypoints || 0) + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (a.result || '') + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td><button onclick="edit(' + a.id + ')">Edit</button> <button onclick="del(' + a.id + ')">Delete</button></td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '</tr>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#list tbody").html(html);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        });&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    };&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    load();&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</script>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</body>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</html>&ndash;&gt;&ndash;&gt;-->

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resources</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: Arial,serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        input { margin: 5px 0; padding: 5px; width: 300px; }
+        button { margin: 5px; padding: 5px 10px; cursor: pointer; }
+        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }
+        nav { margin: 20px 0; padding: 10px; background: #f0f0f0; }
+        nav a { margin: 0 10px; text-decoration: none; color: #333; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/index.html">Home</a> |
+    <a href="/articles.html">Articles</a> |
+    <a href="/resources.html">Resources</a> |
+    <a href="/users.html">Users</a> |
+    <a href="/assessments.html">Assessments</a>
+</nav>
+
+<header>Resources</header>
+
+<input type="text" id="search" placeholder="Search by name..." onkeyup="doSearch()">
+
+<div class="box">
+    <input type="hidden" id="editId">
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="type" placeholder="Type">
+    <input type="text" id="phone" placeholder="Phone Number">
+    <input type="text" id="website" placeholder="Website">
+    <button id="saveBtn">Add Resource</button>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Phone</th>
+        <th>Website</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="resourcesTableBody"></tbody>
+</table>
+
+<br>
+<a href="/index.html">Return to Home</a>
+
+<script>
+    const API = "http://localhost:8080/api/resources";
+
+    function load() {
+        $.get(API, function(data) {
+            let html = "";
+            for(let r of data) {
+                html += '<tr>';
+                html += '<td>' + (r.id || '') + '</td>';
+                html += '<td>' + (r.name || '') + '</td>';
+                html += '<td>' + (r.type || '') + '</td>';
+                html += '<td>' + (r.phoneNumber || '') + '</td>';
+                html += '<td>' + (r.website || '') + '</td>';
+                html += '<td><button onclick="edit(' + r.id + ')">Edit</button> <button onclick="del(' + r.id + ')">Delete</button></td>';
+                html += '</tr>';
+            }
+            document.getElementById("resourcesTableBody").innerHTML = html;
+        });
+    }
+
+    function resetForm() {
+        document.getElementById("editId").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("type").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("website").value = "";
+        document.getElementById("saveBtn").innerHTML = "Add Resource";
+    }
+
+    document.getElementById("saveBtn").onclick = function() {
+        let id = document.getElementById("editId").value;
+        let item = {
+            name: document.getElementById("name").value,
+            type: document.getElementById("type").value,
+            phoneNumber: document.getElementById("phone").value,
+            website: document.getElementById("website").value
+        };
+
+        if(id) {
+            fetch(API + "/" + id, {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(item)
+            }).then(function() {
+                resetForm();
+                load();
+                alert("Resource updated!");
+            });
+        } else {
+            fetch(API, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(item)
+            }).then(function() {
+                resetForm();
+                load();
+                alert("Resource added!");
+            });
+        }
+    };
+
+    window.edit = function(id) {
+        fetch(API + "/" + id)
+            .then(function(response) { return response.json(); })
+            .then(function(r) {
+                document.getElementById("editId").value = r.id;
+                document.getElementById("name").value = r.name;
+                document.getElementById("type").value = r.type;
+                document.getElementById("phone").value = r.phoneNumber;
+                document.getElementById("website").value = r.website;
+                document.getElementById("saveBtn").innerHTML = "Update Resource";
+            });
+    };
+
+    window.del = function(id) {
+        if(confirm("Delete this resource?")) {
+            fetch(API + "/" + id, { method: "DELETE" })
+                .then(function() {
+                    load();
+                    alert("Resource deleted!");
+                });
+        }
+    };
+
+    window.doSearch = function() {
+        let q = document.getElementById("search").value;
+        if(q) {
+            fetch(API + "/search?name=" + q)
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    let html = "";
+                    for(let r of data) {
+                        html += '<tr>';
+                        html += '<td>' + (r.id || '') + '</td>';
+                        html += '<td>' + (r.name || '') + '</td>';
+                        html += '<td>' + (r.type || '') + '</td>';
+                        html += '<td>' + (r.phoneNumber || '') + '</td>';
+                        html += '<td>' + (r.website || '') + '</td>';
+                        html += '<td><button onclick="edit(' + r.id + ')">Edit</button> <button onclick="del(' + r.id + ')">Delete</button></td>';
+                        html += '</tr>';
+                    }
+                    document.getElementById("resourcesTableBody").innerHTML = html;
+                });
+        } else {
+            load();
+        }
+    };
+
+    load();
+</script>
+</body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Resources</title>-->
+<!--    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>-->
+<!--    <style>-->
+<!--        body { font-family: Arial,serif; margin: 20px; }-->
+<!--        table { border-collapse: collapse; width: 100%; }-->
+<!--        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }-->
+<!--        th { background-color: #f0f0f0; }-->
+<!--        input { margin: 5px 0; padding: 5px; width: 300px; }-->
+<!--        button { margin: 5px; padding: 5px 10px; cursor: pointer; }-->
+<!--        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }-->
+<!--        nav { margin: 20px 0; padding: 10px; background: #f0f0f0; }-->
+<!--        nav a { margin: 0 10px; text-decoration: none; color: #333; }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<nav>-->
+<!--    <a href="/index.html">Home</a> |-->
+<!--    <a href="/articles.html">Articles</a> |-->
+<!--    <a href="/resources.html">Resources</a> |-->
+<!--    <a href="/users.html">Users</a> |-->
+<!--    <a href="/assessments.html">Assessments</a>-->
+<!--</nav>-->
+
+<!--<header>Resources</header>-->
+
+<!--<input type="text" id="search" placeholder="Search by name..." onkeyup="doSearch()">-->
+
+<!--<div class="box">-->
+<!--    <input type="hidden" id="editId">-->
+<!--    <input type="text" id="name" placeholder="Name">-->
+<!--    <input type="text" id="type" placeholder="Type">-->
+<!--    <input type="text" id="phone" placeholder="Phone Number">-->
+<!--    <input type="text" id="website" placeholder="Website">-->
+<!--    <button id="saveBtn">Add Resource</button>-->
+<!--</div>-->
+
+<!--<table>-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <th>ID</th>-->
+<!--        <th>Name</th>-->
+<!--        <th>Type</th>-->
+<!--        <th>Phone</th>-->
+<!--        <th>Website</th>-->
+<!--        <th>Actions</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody id="resourcesTableBody"></tbody>-->
+<!--    </table>-->
+
+<!--    <br>-->
+<!--    <a href="/index.html">Return to Home</a>-->
+
+<!--    <script>-->
+<!--        const API = "http://localhost:8080/api/resources";-->
+
+<!--        function load() {-->
+<!--            console.log("Loading resources...");-->
+<!--            $.get(API, function(data) {-->
+<!--                console.log("Data received:", data);-->
+<!--                let html = "";-->
+<!--                for(let r of data) {-->
+<!--                    html += '<tr>';-->
+<!--                    html += '<td>' + (r.id || '') + '</td>';-->
+<!--                    html += '<td>' + (r.name || '') + '</td>';-->
+<!--                    html += '<td>' + (r.type || '') + '</td>';-->
+<!--                    html += '<td>' + (r.phoneNumber || '') + '</td>';-->
+<!--                    html += '<td>' + (r.website || '') + '</td>';-->
+<!--                    html += '<td><button onclick="editResource(' + r.id + ')">Edit</button> <button onclick="deleteResource(' + r.id + ')">Delete</button></td>';-->
+<!--                    html += '</tr>';-->
+<!--                }-->
+<!--                $("#resourcesTableBody").html(html);-->
+<!--            }).fail(function(err) {-->
+<!--                console.error("Error:", err);-->
+<!--                $("#resourcesTableBody").html('<tr><td colspan="6">Error loading resources. Make sure server is running.放弃</tr>');-->
+<!--            });-->
+<!--        }-->
+
+<!--        $(document).ready(function() {-->
+<!--            console.log("Document ready, attaching click handler");-->
+
+<!--            $("#saveBtn").click(function() {-->
+<!--                console.log("Save button clicked!");-->
+
+<!--                let id = $("#editId").val();-->
+<!--                let nameVal = $("#name").val();-->
+<!--                let typeVal = $("#type").val();-->
+<!--                let phoneVal = $("#phone").val();-->
+<!--                let websiteVal = $("#website").val();-->
+
+<!--                console.log("ID:", id);-->
+<!--                console.log("Name:", nameVal);-->
+<!--                console.log("Type:", typeVal);-->
+<!--                console.log("Phone:", phoneVal);-->
+<!--                console.log("Website:", websiteVal);-->
+
+<!--                // Only send the fields that exist in your form-->
+<!--                let item = {-->
+<!--                    name: nameVal,-->
+<!--                    type: typeVal,-->
+<!--                    phoneNumber: phoneVal,-->
+<!--                    website: websiteVal-->
+<!--                };-->
+
+<!--                if (!nameVal) {-->
+<!--                    alert("Name is required!");-->
+<!--                    return;-->
+<!--                }-->
+
+<!--                if(id) {-->
+<!--                    console.log("Updating resource with ID:", id);-->
+<!--                    $.ajax({-->
+<!--                        url: `${API}/${id}`,-->
+<!--                        method: "PUT",-->
+<!--                        contentType: "application/json",-->
+<!--                        data: JSON.stringify(item),-->
+<!--                        success: function(response) {-->
+<!--                            console.log("Update success:", response);-->
+<!--                            $("#editId, #name, #type, #phone, #website").val("");-->
+<!--                            $("#saveBtn").text("Add Resource");-->
+<!--                            load();-->
+<!--                            alert("Resource updated!");-->
+<!--                        },-->
+<!--                        error: function(xhr) {-->
+<!--                            console.error("Update error:", xhr.responseText);-->
+<!--                            alert("Error updating: " + xhr.responseText);-->
+<!--                        }-->
+<!--                    });-->
+<!--                } else {-->
+<!--                    console.log("Adding new resource");-->
+<!--                    $.ajax({-->
+<!--                        url: API,-->
+<!--                        method: "POST",-->
+<!--                        contentType: "application/json",-->
+<!--                        data: JSON.stringify(item),-->
+<!--                        success: function(response) {-->
+<!--                            console.log("Add success:", response);-->
+<!--                            $("#name, #type, #phone, #website").val("");-->
+<!--                            load();-->
+<!--                            alert("Resource added!");-->
+<!--                        },-->
+<!--                        error: function(xhr) {-->
+<!--                            console.error("Add error:", xhr.responseText);-->
+<!--                            alert("Error adding: " + xhr.responseText);-->
+<!--                        }-->
+<!--                    });-->
+<!--                }-->
+<!--            });-->
+<!--        });-->
+
+<!--        window.editResource = function(id) {-->
+<!--            console.log("Editing ID:", id);-->
+<!--            $.get(`${API}/${id}`, function(r) {-->
+<!--                $("#editId").val(r.id);-->
+<!--                $("#name").val(r.name);-->
+<!--                $("#type").val(r.type);-->
+<!--                $("#phone").val(r.phoneNumber);-->
+<!--                $("#website").val(r.website);-->
+<!--                $("#saveBtn").text("Update Resource");-->
+<!--            }).fail(function(err) {-->
+<!--                console.error("Error fetching:", err);-->
+<!--                alert("Could not load resource data");-->
+<!--            });-->
+<!--        };-->
+
+<!--        window.deleteResource = function(id) {-->
+<!--            if(confirm("Delete this resource?")) {-->
+<!--                console.log("Deleting ID:", id);-->
+<!--                $.ajax({-->
+<!--                    url: `${API}/${id}`,-->
+<!--                    method: "DELETE",-->
+<!--                    success: function() {-->
+<!--                        console.log("Delete success");-->
+<!--                        load();-->
+<!--                        alert("Resource deleted!");-->
+<!--                    },-->
+<!--                    error: function(err) {-->
+<!--                        console.error("Delete error:", err);-->
+<!--                        alert("Error deleting resource");-->
+<!--                    }-->
+<!--                });-->
+<!--            }-->
+<!--        };-->
+
+<!--        window.doSearch = function() {-->
+<!--            let q = $("#search").val();-->
+<!--            console.log("Searching for:", q);-->
+<!--            if(q) {-->
+<!--                $.get(`${API}/search?name=${q}`, function(data) {-->
+<!--                    let html = "";-->
+<!--                    for(let r of data) {-->
+<!--                        html += '<tr>';-->
+<!--                        html += '<td>' + (r.id || '') + '</td>';-->
+<!--                        html += '<td>' + (r.name || '') + '</td>';-->
+<!--                        html += '<td>' + (r.type || '') + '</td>';-->
+<!--                        html += '<td>' + (r.phoneNumber || '') + '</td>';-->
+<!--                        html += '<td>' + (r.website || '') + '</td>';-->
+<!--                        html += '<td><button onclick="editResource(' + r.id + ')">Edit</button> <button onclick="deleteResource(' + r.id + ')">Delete</button></td>';-->
+<!--                        html += '</tr>';-->
+<!--                    }-->
+<!--                    $("#resourcesTableBody").html(html);-->
+<!--                });-->
+<!--            } else {-->
+<!--                load();-->
+<!--            }-->
+<!--        };-->
+
+<!--        load();-->
+<!--    </script>-->
+<!--</body>-->
+<!--</html>-->
+
+<!--&lt;!&ndash;<!DOCTYPE html>&ndash;&gt;-->
+<!--&lt;!&ndash;<html lang="en">&ndash;&gt;-->
+<!--&lt;!&ndash;<head>&ndash;&gt;-->
+<!--&lt;!&ndash;    <meta charset="UTF-8">&ndash;&gt;-->
+<!--&lt;!&ndash;    <title>Resources</title>&ndash;&gt;-->
+<!--&lt;!&ndash;    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>&ndash;&gt;-->
+<!--&lt;!&ndash;    <style>&ndash;&gt;-->
+<!--&lt;!&ndash;        body { font-family: Arial,serif; margin: 20px; }&ndash;&gt;-->
+<!--&lt;!&ndash;        table { border-collapse: collapse; width: 100%; }&ndash;&gt;-->
+<!--&lt;!&ndash;        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }&ndash;&gt;-->
+<!--&lt;!&ndash;        th { background-color: #f0f0f0; }&ndash;&gt;-->
+<!--&lt;!&ndash;        input { margin: 5px 0; padding: 5px; width: 300px; }&ndash;&gt;-->
+<!--&lt;!&ndash;        button { margin: 5px; padding: 5px 10px; cursor: pointer; }&ndash;&gt;-->
+<!--&lt;!&ndash;        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }&ndash;&gt;-->
+<!--&lt;!&ndash;        nav { margin: 20px 0; padding: 10px; background: #f0f0f0; }&ndash;&gt;-->
+<!--&lt;!&ndash;        nav a { margin: 0 10px; text-decoration: none; color: #333; }&ndash;&gt;-->
+<!--&lt;!&ndash;    </style>&ndash;&gt;-->
+<!--&lt;!&ndash;</head>&ndash;&gt;-->
+<!--&lt;!&ndash;<body>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<nav>&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/index.html">Home</a> |&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/articles.html">Articles</a> |&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/resources.html">Resources</a> |&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/users.html">Users</a> |&ndash;&gt;-->
+<!--&lt;!&ndash;    <a href="/assessments.html">Assessments</a>&ndash;&gt;-->
+<!--&lt;!&ndash;</nav>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<header>Resources</header>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<input type="text" id="search" placeholder="Search by name..." onkeyup="doSearch()">&ndash;&gt;-->
+
+<!--&lt;!&ndash;<div class="box">&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="hidden" id="editId">&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="text" id="name" placeholder="Name">&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="text" id="type" placeholder="Type">&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="text" id="phone" placeholder="Phone Number">&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="text" id="website" placeholder="Website">&ndash;&gt;-->
+<!--&lt;!&ndash;    <button id="saveBtn">Add Resource</button>&ndash;&gt;-->
+<!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<table id="list">&ndash;&gt;-->
+<!--&lt;!&ndash;    <thead>&ndash;&gt;-->
+<!--&lt;!&ndash;    <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>ID</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>Name</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>Type</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>Phone</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>Website</th>&ndash;&gt;-->
+<!--&lt;!&ndash;        <th>Actions</th>&ndash;&gt;-->
+<!--&lt;!&ndash;    </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;    </thead>&ndash;&gt;-->
+<!--&lt;!&ndash;    <tbody id="resourcesTableBody"></tbody>&ndash;&gt;-->
+<!--&lt;!&ndash;</table>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<br>&ndash;&gt;-->
+<!--&lt;!&ndash;<a href="/index.html">Return to Home</a>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<script>&ndash;&gt;-->
+<!--&lt;!&ndash;    const API = "http://localhost:8080/api/resources";&ndash;&gt;-->
+
+<!--&lt;!&ndash;    function load() {&ndash;&gt;-->
+<!--&lt;!&ndash;        console.log("Loading resources...");&ndash;&gt;-->
+<!--&lt;!&ndash;        $.get(API, function(data) {&ndash;&gt;-->
+<!--&lt;!&ndash;            console.log("Data received:", data);&ndash;&gt;-->
+<!--&lt;!&ndash;            let html = "";&ndash;&gt;-->
+<!--&lt;!&ndash;            for(let r of data) {&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<tr>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td>' + (r.id || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td>' + (r.name || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td>' + (r.type || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td>' + (r.phoneNumber || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td>' + (r.website || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '<td><button onclick="editResource(' + r.id + ')">Edit</button> <button onclick="deleteResource(' + r.id + ')">Delete</button></td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                html += '</tr>';&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#resourcesTableBody").html(html);&ndash;&gt;-->
+<!--&lt;!&ndash;        }).fail(function(err) {&ndash;&gt;-->
+<!--&lt;!&ndash;            console.error("Error:", err);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#resourcesTableBody").html('<tr><td colspan="6">Error loading resources. Make sure server is running.</td></tr>');&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // Make sure the button click handler is properly attached&ndash;&gt;-->
+<!--&lt;!&ndash;    $(document).ready(function() {&ndash;&gt;-->
+<!--&lt;!&ndash;        console.log("Document ready, attaching click handler");&ndash;&gt;-->
+
+<!--&lt;!&ndash;        $("#saveBtn").click(function() {&ndash;&gt;-->
+<!--&lt;!&ndash;            console.log("Save button clicked!");&ndash;&gt;-->
+
+<!--&lt;!&ndash;            let id = $("#editId").val();&ndash;&gt;-->
+<!--&lt;!&ndash;            let nameVal = $("#name").val();&ndash;&gt;-->
+<!--&lt;!&ndash;            let typeVal = $("#type").val();&ndash;&gt;-->
+<!--&lt;!&ndash;            let phoneVal = $("#phone").val();&ndash;&gt;-->
+<!--&lt;!&ndash;            let websiteVal = $("#website").val();&ndash;&gt;-->
+
+<!--&lt;!&ndash;            console.log("ID:", id);&ndash;&gt;-->
+<!--&lt;!&ndash;            console.log("Name:", nameVal);&ndash;&gt;-->
+<!--&lt;!&ndash;            console.log("Type:", typeVal);&ndash;&gt;-->
+<!--&lt;!&ndash;            console.log("Phone:", phoneVal);&ndash;&gt;-->
+<!--&lt;!&ndash;            console.log("Website:", websiteVal);&ndash;&gt;-->
+
+<!--&lt;!&ndash;            let item = {&ndash;&gt;-->
+<!--&lt;!&ndash;                name: nameVal,&ndash;&gt;-->
+<!--&lt;!&ndash;                type: typeVal,&ndash;&gt;-->
+<!--&lt;!&ndash;                phoneNumber: phoneVal,&ndash;&gt;-->
+<!--&lt;!&ndash;                website: websiteVal,&ndash;&gt;-->
+<!--&lt;!&ndash;                description: $("#description").val() || "",&ndash;&gt;-->
+<!--&lt;!&ndash;                contactInfo: phoneVal,&ndash;&gt;-->
+<!--&lt;!&ndash;                email: $("#email").val() || ""&ndash;&gt;-->
+<!--&lt;!&ndash;            };&ndash;&gt;-->
+
+<!--&lt;!&ndash;            if (!nameVal) {&ndash;&gt;-->
+<!--&lt;!&ndash;                alert("Name is required!");&ndash;&gt;-->
+<!--&lt;!&ndash;                return;&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+
+<!--&lt;!&ndash;            if(id) {&ndash;&gt;-->
+<!--&lt;!&ndash;                console.log("Updating resource with ID:", id);&ndash;&gt;-->
+<!--&lt;!&ndash;                $.ajax({&ndash;&gt;-->
+<!--&lt;!&ndash;                    url: `${API}/${id}`,&ndash;&gt;-->
+<!--&lt;!&ndash;                    method: "PUT",&ndash;&gt;-->
+<!--&lt;!&ndash;                    contentType: "application/json",&ndash;&gt;-->
+<!--&lt;!&ndash;                    data: JSON.stringify(item),&ndash;&gt;-->
+<!--&lt;!&ndash;                    success: function(response) {&ndash;&gt;-->
+<!--&lt;!&ndash;                        console.log("Update success:", response);&ndash;&gt;-->
+<!--&lt;!&ndash;                        $("#editId, #name, #type, #phone, #website").val("");&ndash;&gt;-->
+<!--&lt;!&ndash;                        $("#saveBtn").text("Add Resource");&ndash;&gt;-->
+<!--&lt;!&ndash;                        load();&ndash;&gt;-->
+<!--&lt;!&ndash;                        alert("Resource updated!");&ndash;&gt;-->
+<!--&lt;!&ndash;                    },&ndash;&gt;-->
+<!--&lt;!&ndash;                    error: function(xhr) {&ndash;&gt;-->
+<!--&lt;!&ndash;                        console.error("Update error:", xhr.responseText);&ndash;&gt;-->
+<!--&lt;!&ndash;                        alert("Error updating: " + xhr.responseText);&ndash;&gt;-->
+<!--&lt;!&ndash;                    }&ndash;&gt;-->
+<!--&lt;!&ndash;                });&ndash;&gt;-->
+<!--&lt;!&ndash;            } else {&ndash;&gt;-->
+<!--&lt;!&ndash;                console.log("Adding new resource");&ndash;&gt;-->
+<!--&lt;!&ndash;                $.ajax({&ndash;&gt;-->
+<!--&lt;!&ndash;                    url: API,&ndash;&gt;-->
+<!--&lt;!&ndash;                    method: "POST",&ndash;&gt;-->
+<!--&lt;!&ndash;                    contentType: "application/json",&ndash;&gt;-->
+<!--&lt;!&ndash;                    data: JSON.stringify(item),&ndash;&gt;-->
+<!--&lt;!&ndash;                    success: function(response) {&ndash;&gt;-->
+<!--&lt;!&ndash;                        console.log("Add success:", response);&ndash;&gt;-->
+<!--&lt;!&ndash;                        $("#name, #type, #phone, #website").val("");&ndash;&gt;-->
+<!--&lt;!&ndash;                        load();&ndash;&gt;-->
+<!--&lt;!&ndash;                        alert("Resource added!");&ndash;&gt;-->
+<!--&lt;!&ndash;                    },&ndash;&gt;-->
+<!--&lt;!&ndash;                    error: function(xhr) {&ndash;&gt;-->
+<!--&lt;!&ndash;                        console.error("Add error:", xhr.responseText);&ndash;&gt;-->
+<!--&lt;!&ndash;                        alert("Error adding: " + xhr.responseText);&ndash;&gt;-->
+<!--&lt;!&ndash;                    }&ndash;&gt;-->
+<!--&lt;!&ndash;                });&ndash;&gt;-->
+<!--&lt;!&ndash;            }&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+<!--&lt;!&ndash;    });&ndash;&gt;-->
+
+<!--&lt;!&ndash;    function resetForm() {&ndash;&gt;-->
+<!--&lt;!&ndash;        $("#editId").val("");&ndash;&gt;-->
+<!--&lt;!&ndash;        $("#name").val("");&ndash;&gt;-->
+<!--&lt;!&ndash;        $("#type").val("");&ndash;&gt;-->
+<!--&lt;!&ndash;        $("#phone").val("");&ndash;&gt;-->
+<!--&lt;!&ndash;        $("#website").val("");&ndash;&gt;-->
+<!--&lt;!&ndash;        $("#saveBtn").text("Add Resource");&ndash;&gt;-->
+<!--&lt;!&ndash;    }&ndash;&gt;-->
+
+<!--&lt;!&ndash;    window.editResource = function(id) {&ndash;&gt;-->
+<!--&lt;!&ndash;        console.log("Editing ID:", id);&ndash;&gt;-->
+<!--&lt;!&ndash;        $.get(`${API}/${id}`, function(r) {&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#editId").val(r.id);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#name").val(r.name);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#type").val(r.type);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#phone").val(r.phoneNumber);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#website").val(r.website);&ndash;&gt;-->
+<!--&lt;!&ndash;            $("#saveBtn").text("Update Resource");&ndash;&gt;-->
+<!--&lt;!&ndash;        }).fail(function(err) {&ndash;&gt;-->
+<!--&lt;!&ndash;            console.error("Error fetching:", err);&ndash;&gt;-->
+<!--&lt;!&ndash;            alert("Could not load resource data");&ndash;&gt;-->
+<!--&lt;!&ndash;        });&ndash;&gt;-->
+<!--&lt;!&ndash;    };&ndash;&gt;-->
+
+<!--&lt;!&ndash;    window.deleteResource = function(id) {&ndash;&gt;-->
+<!--&lt;!&ndash;        if(confirm("Delete this resource?")) {&ndash;&gt;-->
+<!--&lt;!&ndash;            console.log("Deleting ID:", id);&ndash;&gt;-->
+<!--&lt;!&ndash;            $.ajax({&ndash;&gt;-->
+<!--&lt;!&ndash;                url: `${API}/${id}`,&ndash;&gt;-->
+<!--&lt;!&ndash;                method: "DELETE",&ndash;&gt;-->
+<!--&lt;!&ndash;                success: function() {&ndash;&gt;-->
+<!--&lt;!&ndash;                    console.log("Delete success");&ndash;&gt;-->
+<!--&lt;!&ndash;                    load();&ndash;&gt;-->
+<!--&lt;!&ndash;                    alert("Resource deleted!");&ndash;&gt;-->
+<!--&lt;!&ndash;                },&ndash;&gt;-->
+<!--&lt;!&ndash;                error: function(err) {&ndash;&gt;-->
+<!--&lt;!&ndash;                    console.error("Delete error:", err);&ndash;&gt;-->
+<!--&lt;!&ndash;                    alert("Error deleting resource");&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;            });&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    };&ndash;&gt;-->
+
+<!--&lt;!&ndash;    window.doSearch = function() {&ndash;&gt;-->
+<!--&lt;!&ndash;        let q = $("#search").val();&ndash;&gt;-->
+<!--&lt;!&ndash;        console.log("Searching for:", q);&ndash;&gt;-->
+<!--&lt;!&ndash;        if(q) {&ndash;&gt;-->
+<!--&lt;!&ndash;            $.get(`${API}/search?name=${q}`, function(data) {&ndash;&gt;-->
+<!--&lt;!&ndash;                let html = "";&ndash;&gt;-->
+<!--&lt;!&ndash;                for(let r of data) {&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<tr>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td>' + (r.id || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td>' + (r.name || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td>' + (r.type || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td>' + (r.phoneNumber || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td>' + (r.website || '') + '</td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '<td><button onclick="editResource(' + r.id + ')">Edit</button> <button onclick="deleteResource(' + r.id + ')">Delete</button></td>';&ndash;&gt;-->
+<!--&lt;!&ndash;                    html += '</tr>';&ndash;&gt;-->
+<!--&lt;!&ndash;                }&ndash;&gt;-->
+<!--&lt;!&ndash;                $("#resourcesTableBody").html(html);&ndash;&gt;-->
+<!--&lt;!&ndash;            });&ndash;&gt;-->
+<!--&lt;!&ndash;        } else {&ndash;&gt;-->
+<!--&lt;!&ndash;            load();&ndash;&gt;-->
+<!--&lt;!&ndash;        }&ndash;&gt;-->
+<!--&lt;!&ndash;    };&ndash;&gt;-->
+
+<!--&lt;!&ndash;    // Load resources when page loads&ndash;&gt;-->
+<!--&lt;!&ndash;    load();&ndash;&gt;-->
+<!--&lt;!&ndash;</script>&ndash;&gt;-->
+<!--&lt;!&ndash;</body>&ndash;&gt;-->
+<!--&lt;!&ndash;</html>&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<!DOCTYPE html>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;<html lang="en">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;<head>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <meta charset="UTF-8">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <title>Resources</title>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <style>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        body { font-family: Arial; margin: 20px; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        table { border-collapse: collapse; width: 100%; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        th { background-color: #f0f0f0; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        input { margin: 5px 0; padding: 5px; width: 300px; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        button { margin: 5px; padding: 5px 10px; cursor: pointer; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        nav { margin: 20px 0; padding: 10px; background: #f0f0f0; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        nav a { margin: 0 10px; text-decoration: none; color: #333; }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    </style>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</head>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;<body>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<nav>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/index.html">Home</a> |&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/articles.html">Articles</a> |&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/resources.html">Resources</a> |&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/users.html">Users</a> |&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <a href="/assessments.html">Assessments</a>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</nav>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<header>Resources</header>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<input type="text" id="search" placeholder="Search by name..." onkeyup="doSearch()">&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<div class="box">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="hidden" id="editId">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="text" id="name" placeholder="Name">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="text" id="type" placeholder="Type">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="text" id="phone" placeholder="Phone Number">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <input type="text" id="website" placeholder="Website">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <button id="saveBtn">Add Resource</button>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</div>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<table id="list">&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <thead>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <tr>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>ID</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Name</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Type</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Phone</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Website</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <th>Actions</th>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    </tr>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    </thead>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    <tbody></tbody>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</table>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<br>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;<a href="/index.html">Return to Home</a>&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;<script>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    const API = "http://localhost:8080/api/resources";&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    function load() {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        $.get(API, function(data) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            let html = "";&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            for(let r of data) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<tr>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + r.id + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + r.name + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (r.type || '') + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (r.phoneNumber || '') + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (r.website || '') + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td><button onclick="edit(' + r.id + ')">Edit</button> <button onclick="del(' + r.id + ')">Delete</button></td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '</tr>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#list tbody").html(html);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        });&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    }&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    $("#saveBtn").click(function() {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        let id = $("#editId").val();&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        let item = {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            name: $("#name").val(),&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            type: $("#type").val(),&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            phoneNumber: $("#phone").val(),&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            website: $("#website").val()&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        };&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;        // rest same...&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    });&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    window.edit = function(id) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        $.get(`${API}/${id}`, function(r) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#editId").val(r.id);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#name").val(r.name);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#type").val(r.type);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#phone").val(r.phoneNumber);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#website").val(r.website);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#saveBtn").text("Update");&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        });&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    };&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    window.del = function(id) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        if(confirm("Delete?")) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $.ajax({ url: `${API}/${id}`, method: "DELETE", complete: load });&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    };&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    window.doSearch = function() {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        let q = $("#search").val();&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        $.get(q ? `${API}/search?name=${q}` : API, function(data) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            let html = "";&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            for(let r of data) {&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<tr>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + r.id + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + r.name + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (r.type || '') + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (r.phoneNumber || '') + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td>' + (r.website || '') + '</td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '<td><button onclick="edit(' + r.id + ')">Edit</button> <button onclick="del(' + r.id + ')">Delete</button></td>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;                html += '</tr>';&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            }&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            $("#list tbody").html(html);&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        });&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;    };&ndash;&gt;&ndash;&gt;-->
+
+<!--&lt;!&ndash;&lt;!&ndash;    load();&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</script>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</body>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;</html>&ndash;&gt;&ndash;&gt;-->
