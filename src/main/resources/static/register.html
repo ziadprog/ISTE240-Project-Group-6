@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ClearMind</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow">
+                <div class="card-body p-4">
+
+                    <h2 class="text-center text-primary mb-4">Create Account</h2>
+
+                    <div id="messageBox"></div>
+
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" id="username" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" id="password" class="form-control" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100" id="registerBtn">
+                            Register
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="login.html">Already have an account? Login</a>
+                    </div>
+
+                    <div class="text-center mt-2">
+                        <a href="index.html">Back to Home</a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function showMessage(message, type) {
+        $("#messageBox").html(
+            `<div class="alert alert-${type}" role="alert">
+                ${message}
+            </div>`
+        );
+    }
+
+    $("#registerForm").submit(function(e) {
+        e.preventDefault();
+
+        $("#registerBtn").prop("disabled", true).text("Registering...");
+
+        let userData = {
+            username: $("#username").val().trim(),
+            email: $("#email").val().trim(),
+            password: $("#password").val().trim()
+        };
+
+        $.ajax({
+            url: "/api/users/register",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(userData),
+            success: function() {
+                showMessage("Registration successful. You can now log in.", "success");
+                $("#registerForm")[0].reset();
+            },
+            error: function() {
+                showMessage("Could not register user.", "danger");
+            },
+            complete: function() {
+                $("#registerBtn").prop("disabled", false).text("Register");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

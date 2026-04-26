@@ -28,10 +28,6 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User searchByEmail(String email) {
-        return userRepository.searchByEmail(email);
-    }
-
     public User saveUser(User user) {
         return userRepository.save(user);
     }
@@ -40,7 +36,15 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public int updatePassword(Long id, String password) {
-        return userRepository.updatePasswordById(id, password);
+    public boolean updateUser(Long id, User user){
+
+        int updated = userRepository.updateUserById(
+                id,
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword()
+        );
+
+        return updated > 0;
     }
 }

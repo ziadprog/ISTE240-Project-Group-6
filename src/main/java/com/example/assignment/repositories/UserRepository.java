@@ -7,15 +7,25 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByUsername(String username);
+    List<User> findAll();
 
-    @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:email)")
-    User searchByEmail(@Param("email") String email);
+    Optional<User> findById(Long id);
+
+    @Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username)")
+    User findByUsername(@Param("username") String username);
 
     @Modifying
     @Transactional
-    @Query("UPDATE User u SET u.password = :password WHERE u.id = :id")
-    int updatePasswordById(@Param("id") Long id, @Param("password") String password);
+    @Query("UPDATE User u SET u.username = :username, u.email = :email, u.password = :password WHERE u.id = :id")
+    int updateUserById(@Param("id") Long id,
+                       @Param("username") String username,
+                       @Param("email") String email,
+                       @Param("password") String password);
+
+    void deleteById(Long id);
 }

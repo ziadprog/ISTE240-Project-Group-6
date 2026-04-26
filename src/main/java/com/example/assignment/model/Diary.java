@@ -1,9 +1,6 @@
 package com.example.assignment.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Diary {
@@ -12,19 +9,27 @@ public class Diary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false)
     private String date;
-    private Long userId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Diary() {
     }
 
-    public Diary(String title, String content, String date, Long userId) {
+    public Diary(String title, String content, String date, User user) {
         this.title = title;
         this.content = content;
         this.date = date;
-        this.userId = userId;
+        this.user = user;
     }
 
     public Long getId() {
@@ -55,11 +60,11 @@ public class Diary {
         this.date = date;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

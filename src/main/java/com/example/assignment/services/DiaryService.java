@@ -24,20 +24,12 @@ public class DiaryService {
         return diaryRepository.findById(id);
     }
 
-    public List<Diary> getByTitle(String title) {
-        return diaryRepository.findByTitle(title);
-    }
-
     public List<Diary> getByUserId(Long userId) {
         return diaryRepository.findByUserId(userId);
     }
 
-    public List<Diary> searchByTitle(String title) {
-        return diaryRepository.searchByTitle(title);
-    }
-
-    public List<Diary> searchByUserAndTitle(Long userId, String title) {
-        return diaryRepository.searchByUserAndTitle(userId, title);
+    public List<Diary> findByUserAndTitle(Long userId, String title) {
+        return diaryRepository.findByUserAndTitle(userId, title);
     }
 
     public Diary saveDiary(Diary diary) {
@@ -48,7 +40,17 @@ public class DiaryService {
         diaryRepository.deleteById(id);
     }
 
-    public int updateContent(Long id, String content) {
-        return diaryRepository.updateContentById(id, content);
+    public boolean updateDiary(Long id, Diary diary) {
+
+        int updated =
+                diaryRepository.updateContentById(
+                        id,
+                        diary.getTitle(),
+                        diary.getContent(),
+                        diary.getDate(),
+                        diary.getUser()
+                );
+
+        return updated > 0;
     }
 }

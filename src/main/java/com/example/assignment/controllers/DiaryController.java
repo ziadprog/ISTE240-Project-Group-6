@@ -32,11 +32,6 @@ public class DiaryController {
         return ResponseEntity.ok(diary);
     }
 
-    @GetMapping("/api/diary/search")
-    public List<Diary> searchDiaries(@RequestParam String title) {
-        return diaryService.searchByTitle(title);
-    }
-
     @GetMapping("/api/diary/user/{userId}")
     public List<Diary> getDiariesByUser(@PathVariable Long userId) {
         return diaryService.getByUserId(userId);
@@ -44,7 +39,7 @@ public class DiaryController {
 
     @GetMapping("/api/diary/user/{userId}/search")
     public List<Diary> searchUserDiaries(@PathVariable Long userId, @RequestParam String title) {
-        return diaryService.searchByUserAndTitle(userId, title);
+        return diaryService.findByUserAndTitle(userId, title);
     }
 
     @PostMapping("/api/diary")
@@ -53,19 +48,17 @@ public class DiaryController {
     }
 
     @PutMapping("/api/diary/{id}")
-    public ResponseEntity<Diary> updateDiary(@PathVariable Long id, @RequestBody Diary updatedDiary) {
-        Diary existingDiary = diaryService.getDiaryById(id).orElse(null);
+    public ResponseEntity<String> updateDiary(@PathVariable Long id, @RequestBody Diary updatedDiary) {
 
-        if (existingDiary == null) {
+        boolean updated = diaryService.updateDiary(id, updatedDiary);
+        if(!updated){
             return ResponseEntity.notFound().build();
         }
 
-        existingDiary.setTitle(updatedDiary.getTitle());
-        existingDiary.setContent(updatedDiary.getContent());
-        existingDiary.setDate(updatedDiary.getDate());
-        existingDiary.setUserId(updatedDiary.getUserId());
+        return ResponseEntity.ok(
+                "Diary updated successfully"
+        );
 
-        return ResponseEntity.ok(diaryService.saveDiary(existingDiary));
     }
 
     @DeleteMapping("/api/diary/{id}")

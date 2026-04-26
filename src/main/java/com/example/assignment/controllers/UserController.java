@@ -45,7 +45,12 @@ public class UserController {
     }
 
     @PostMapping("/api/users/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody User user) {
+
+        if(userService.getByUsername(user.getUsername()) != null){
+            return ResponseEntity.badRequest().body("Username already exists");
+        }
+
         return ResponseEntity.ok(userService.saveUser(user));
     }
 
@@ -54,22 +59,24 @@ public class UserController {
         User user = userService.getByUsername(loginRequest.getUsername());
 
         if (user == null || !user.getPassword().equals(loginRequest.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
 
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("/api/users/{id}")
-    public ResponseEntity<String> updatePassword(@PathVariable Long id, @RequestBody User updatedUser) {
-        int updated = userService.updatePassword(id, updatedUser.getPassword());
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User updatedUser){
 
-        if (updated == 0) {
+        boolean updated= userService.updateUser(id,updatedUser);
+
+        if(!updated){
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok("Password updated successfully");
+        return ResponseEntity.ok(
+                "User updated successfully"
+        );
     }
 
     @DeleteMapping("/api/users/{id}")

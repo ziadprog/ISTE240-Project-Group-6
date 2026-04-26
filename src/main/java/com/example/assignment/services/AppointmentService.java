@@ -28,16 +28,8 @@ public class AppointmentService {
         return appointmentRepository.findByUserId(userId);
     }
 
-    public List<Appointment> getByDate(String date) {
-        return appointmentRepository.findByDate(date);
-    }
-
-    public List<Appointment> searchByTitle(String title) {
-        return appointmentRepository.searchByTitle(title);
-    }
-
-    public List<Appointment> searchByUserAndTitle(Long userId, String title) {
-        return appointmentRepository.searchByUserAndTitle(userId, title);
+    public List<Appointment> findByUserAndTitle(Long userId, String title) {
+        return appointmentRepository.findByUserAndTitle(userId, title);
     }
 
     public Appointment saveAppointment(Appointment appointment) {
@@ -48,7 +40,18 @@ public class AppointmentService {
         appointmentRepository.deleteById(id);
     }
 
-    public int updateTime(Long id, String time) {
-        return appointmentRepository.updateTimeById(id, time);
+    public boolean updateAppointment(Long id, Appointment appointment){
+
+        int updated = appointmentRepository.updateAppointmentById(
+                id,
+                appointment.getTitle(),
+                appointment.getDescription(),
+                appointment.getDate(),
+                appointment.getTime(),
+                appointment.getUser()
+        );
+
+        return updated > 0;
+
     }
 }

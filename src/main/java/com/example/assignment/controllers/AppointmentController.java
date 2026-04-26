@@ -32,11 +32,6 @@ public class AppointmentController {
         return ResponseEntity.ok(appointment);
     }
 
-    @GetMapping("/api/appointments/search")
-    public List<Appointment> searchAppointments(@RequestParam String title) {
-        return appointmentService.searchByTitle(title);
-    }
-
     @GetMapping("/api/appointments/user/{userId}")
     public List<Appointment> getAppointmentsByUser(@PathVariable Long userId) {
         return appointmentService.getByUserId(userId);
@@ -44,7 +39,7 @@ public class AppointmentController {
 
     @GetMapping("/api/appointments/user/{userId}/search")
     public List<Appointment> searchUserAppointments(@PathVariable Long userId, @RequestParam String title) {
-        return appointmentService.searchByUserAndTitle(userId, title);
+        return appointmentService.findByUserAndTitle(userId, title);
     }
 
     @PostMapping("/api/appointments")
@@ -53,20 +48,18 @@ public class AppointmentController {
     }
 
     @PutMapping("/api/appointments/{id}")
-    public ResponseEntity<Appointment> updateAppointment(@PathVariable Long id, @RequestBody Appointment updatedAppointment) {
-        Appointment existingAppointment = appointmentService.getAppointmentById(id).orElse(null);
+    public ResponseEntity<String> updateAppointment(@PathVariable Long id, @RequestBody Appointment updatedAppointment){
 
-        if (existingAppointment == null) {
+        boolean updated= appointmentService.updateAppointment(id, updatedAppointment);
+
+        if(!updated){
             return ResponseEntity.notFound().build();
         }
 
-        existingAppointment.setTitle(updatedAppointment.getTitle());
-        existingAppointment.setDescription(updatedAppointment.getDescription());
-        existingAppointment.setDate(updatedAppointment.getDate());
-        existingAppointment.setTime(updatedAppointment.getTime());
-        existingAppointment.setUserId(updatedAppointment.getUserId());
+        return ResponseEntity.ok(
+                "Appointment updated successfully"
+        );
 
-        return ResponseEntity.ok(appointmentService.saveAppointment(existingAppointment));
     }
 
     @DeleteMapping("/api/appointments/{id}")

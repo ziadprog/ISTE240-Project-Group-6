@@ -1,9 +1,6 @@
 package com.example.assignment.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Appointment {
@@ -12,21 +9,31 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private String date;
+
+    @Column(nullable = false)
     private String time;
-    private Long userId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Appointment() {
     }
 
-    public Appointment(String title, String description, String date, String time, Long userId) {
+    public Appointment(String title, String description, String date, String time, User user) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.time = time;
-        this.userId = userId;
+        this.user = user;
     }
 
     public Long getId() {
@@ -65,11 +72,11 @@ public class Appointment {
         this.time = time;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 }
