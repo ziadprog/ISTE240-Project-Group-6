@@ -1,3 +1,5 @@
+//ziad abdelrahman - 764002985
+
 package com.example.assignment.model;
 
 import jakarta.persistence.*;
