@@ -22,7 +22,7 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE Diary d SET d.title = :title, d.content = :content, d.date = :date, d.user = :user WHERE d.id = :id")
-    int updateContentById(@Param("id") Long id,
+    void updateDiaryById(@Param("id") Long id,
                           @Param("title") String title,
                           @Param("content") String content,
                           @Param("date") String date,

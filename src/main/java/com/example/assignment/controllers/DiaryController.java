@@ -49,16 +49,8 @@ public class DiaryController {
 
     @PutMapping("/api/diary/{id}")
     public ResponseEntity<String> updateDiary(@PathVariable Long id, @RequestBody Diary updatedDiary) {
-
-        boolean updated = diaryService.updateDiary(id, updatedDiary);
-        if(!updated){
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(
-                "Diary updated successfully"
-        );
-
+        diaryService.updateDiary(id, updatedDiary);
+        return ResponseEntity.ok("Diary updated successfully");
     }
 
     @DeleteMapping("/api/diary/{id}")

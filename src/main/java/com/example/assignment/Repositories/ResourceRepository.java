@@ -24,7 +24,7 @@ public interface ResourceRepository extends JpaRepository<Resources, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE Resources r SET r.name = :name, r.type = :type, r.description = :description, r.website = :website, r.user = :user WHERE r.id = :id")
-    int updateResourceById(@Param("id") Long id,
+    void updateResourceById(@Param("id") Long id,
                            @Param("name") String name,
                            @Param("type") String type,
                            @Param("description") String description,

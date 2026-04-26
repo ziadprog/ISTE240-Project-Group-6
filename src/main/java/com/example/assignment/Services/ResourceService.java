@@ -38,8 +38,8 @@ public class ResourceService {
         return resourceRepository.save(resource);
     }
 
-    public boolean updateResource(Long id, Resources resource) {
-        int updated = resourceRepository.updateResourceById(
+    public void updateResource(Long id, Resources resource) {
+        resourceRepository.updateResourceById(
                 id,
                 resource.getName(),
                 resource.getType(),
@@ -47,8 +47,6 @@ public class ResourceService {
                 resource.getWebsite(),
                 resource.getUser()
         );
-
-        return updated > 0;
     }
 
     public void deleteResource(Long id) {

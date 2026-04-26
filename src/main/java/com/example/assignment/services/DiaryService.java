@@ -40,17 +40,13 @@ public class DiaryService {
         diaryRepository.deleteById(id);
     }
 
-    public boolean updateDiary(Long id, Diary diary) {
-
-        int updated =
-                diaryRepository.updateContentById(
-                        id,
-                        diary.getTitle(),
-                        diary.getContent(),
-                        diary.getDate(),
-                        diary.getUser()
-                );
-
-        return updated > 0;
+    public void updateDiary(Long id, Diary diary) {
+        diaryRepository.updateDiaryById(
+                id,
+                diary.getTitle(),
+                diary.getContent(),
+                diary.getDate(),
+                diary.getUser()
+        );
     }
 }

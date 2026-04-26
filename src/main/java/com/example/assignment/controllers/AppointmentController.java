@@ -48,18 +48,9 @@ public class AppointmentController {
     }
 
     @PutMapping("/api/appointments/{id}")
-    public ResponseEntity<String> updateAppointment(@PathVariable Long id, @RequestBody Appointment updatedAppointment){
-
-        boolean updated= appointmentService.updateAppointment(id, updatedAppointment);
-
-        if(!updated){
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(
-                "Appointment updated successfully"
-        );
-
+    public ResponseEntity<String> updateAppointment(@PathVariable Long id, @RequestBody Appointment updatedAppointment) {
+        appointmentService.updateAppointment(id, updatedAppointment);
+        return ResponseEntity.ok("Appointment updated successfully");
     }
 
     @DeleteMapping("/api/appointments/{id}")

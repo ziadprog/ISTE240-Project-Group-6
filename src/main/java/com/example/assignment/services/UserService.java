@@ -36,15 +36,12 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public boolean updateUser(Long id, User user){
-
-        int updated = userRepository.updateUserById(
+    public void updateUser(Long id, User user) {
+        userRepository.updateUserById(
                 id,
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword()
         );
-
-        return updated > 0;
     }
 }

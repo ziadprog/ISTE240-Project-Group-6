@@ -44,12 +44,7 @@ public class ResourceController {
 
     @PutMapping("/api/resources/{id}")
     public ResponseEntity<String> updateResource(@PathVariable Long id, @RequestBody Resources resource) {
-        boolean updated = resourceService.updateResource(id, resource);
-
-        if (!updated) {
-            return ResponseEntity.notFound().build();
-        }
-
+        resourceService.updateResource(id, resource);
         return ResponseEntity.ok("Resource updated successfully");
     }
 

@@ -66,17 +66,9 @@ public class UserController {
     }
 
     @PutMapping("/api/users/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User updatedUser){
-
-        boolean updated= userService.updateUser(id,updatedUser);
-
-        if(!updated){
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(
-                "User updated successfully"
-        );
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        userService.updateUser(id, updatedUser);
+        return ResponseEntity.ok("User updated successfully");
     }
 
     @DeleteMapping("/api/users/{id}")

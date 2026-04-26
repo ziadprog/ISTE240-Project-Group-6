@@ -40,9 +40,8 @@ public class AppointmentService {
         appointmentRepository.deleteById(id);
     }
 
-    public boolean updateAppointment(Long id, Appointment appointment){
-
-        int updated = appointmentRepository.updateAppointmentById(
+    public void updateAppointment(Long id, Appointment appointment) {
+        appointmentRepository.updateAppointmentById(
                 id,
                 appointment.getTitle(),
                 appointment.getDescription(),
@@ -50,8 +49,5 @@ public class AppointmentService {
                 appointment.getTime(),
                 appointment.getUser()
         );
-
-        return updated > 0;
-
     }
 }

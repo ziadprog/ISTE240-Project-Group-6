@@ -24,7 +24,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE Activity a SET a.title = :title, a.category = :category, a.description = :description, a.date = :date, a.duration = :duration, a.user = :user WHERE a.id = :id")
-    int updateActivityById(@Param("id") Long id,
+    void updateActivityById(@Param("id") Long id,
                            @Param("title") String title,
                            @Param("category") String category,
                            @Param("description") String description,

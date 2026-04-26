@@ -39,20 +39,16 @@ public class ActivityService {
         return activityRepository.save(activity);
     }
 
-    public boolean updateActivity(Long id, Activity activity){
-
-        int updated = activityRepository.updateActivityById(
-                        id,
-                        activity.getTitle(),
-                        activity.getCategory(),
-                        activity.getDescription(),
-                        activity.getDate(),
-                        activity.getDuration(),
-                        activity.getUser()
-                );
-
-        return updated > 0;
-
+    public void updateActivity(Long id, Activity activity) {
+        activityRepository.updateActivityById(
+                id,
+                activity.getTitle(),
+                activity.getCategory(),
+                activity.getDescription(),
+                activity.getDate(),
+                activity.getDuration(),
+                activity.getUser()
+        );
     }
 
     public void deleteActivity(Long id) {

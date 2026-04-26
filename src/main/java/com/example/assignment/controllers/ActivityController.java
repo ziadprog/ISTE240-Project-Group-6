@@ -48,18 +48,9 @@ public class ActivityController {
     }
 
     @PutMapping("/api/activities/{id}")
-    public ResponseEntity<String> updateActivity(@PathVariable Long id, @RequestBody Activity updatedActivity){
-
-        boolean updated= activityService.updateActivity(id, updatedActivity);
-
-        if(!updated){
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(
-                "Activity updated successfully"
-        );
-
+    public ResponseEntity<String> updateActivity(@PathVariable Long id, @RequestBody Activity updatedActivity) {
+        activityService.updateActivity(id, updatedActivity);
+        return ResponseEntity.ok("Activity updated successfully");
     }
 
     @DeleteMapping("/api/activities/{id}")
