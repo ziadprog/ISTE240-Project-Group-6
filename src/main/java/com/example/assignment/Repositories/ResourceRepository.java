@@ -1,26 +1,35 @@
-//Name: Ziad Abdelrahman
-//ID: 764002985
-
-package com.example.assignment.Repositories;
-
+package com.example.assignment.repositories;
 
 import com.example.assignment.model.Resources;
-import jakarta.transaction.Transactional;
+import com.example.assignment.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Repository
 public interface ResourceRepository extends JpaRepository<Resources, Long> {
 
-    @Query("SELECT r FROM Resources r WHERE r.name LIKE %:name%")
-    List<Resources> findByNameContaining(@Param("name") String name);
+    List<Resources> findByUserId(Long userId);
+
+    List<Resources> findAll();
+
+    @Query("SELECT r FROM Resources r WHERE r.user.id = :userId AND LOWER(r.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Resources> findByUserAndName(@Param("userId") Long userId, @Param("name") String name);
 
     @Modifying
     @Transactional
-    @Query("UPDATE Resources r SET r.phoneNumber = :phone WHERE r.id = :id")
-    int updatePhoneNumberById(@Param("id") Long id, @Param("phone") String phoneNumber);
+    @Query("UPDATE Resources r SET r.name = :name, r.type = :type, r.description = :description, r.website = :website, r.user = :user WHERE r.id = :id")
+    int updateResourceById(@Param("id") Long id,
+                           @Param("name") String name,
+                           @Param("type") String type,
+                           @Param("description") String description,
+                           @Param("website") String website,
+                           @Param("user") User user);
+
+    void deleteById(Long id);
 }
