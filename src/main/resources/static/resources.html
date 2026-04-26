@@ -1,0 +1,173 @@
+<!-- Name:Ziad Abdelrahman -->
+<!-- UID: 7640029785 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resources</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body { font-family: Arial,serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        input { margin: 5px 0; padding: 5px; width: 300px; }
+        button { margin: 5px; padding: 5px 10px; cursor: pointer; }
+        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }
+        nav { margin: 20px 0; padding: 10px; background: #f0f0f0; }
+        nav a { margin: 0 10px; text-decoration: none; color: #333; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/index.html">Home</a> |
+    <a href="/articles.html">Articles</a> |
+    <a href="/resources.html">Resources</a> |
+    <a href="/users.html">Users</a> |
+    <a href="/assessments.html">Assessments</a>
+</nav>
+
+<header>Resources</header>
+
+<input type="text" id="search" placeholder="Search by name..." onkeyup="doSearch()">
+
+<div class="box">
+    <input type="hidden" id="editId">
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="type" placeholder="Type">
+    <input type="text" id="phone" placeholder="Phone Number">
+    <input type="text" id="website" placeholder="Website">
+    <button id="saveBtn">Add Resource</button>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Phone</th>
+        <th>Website</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="resourcesTableBody"></tbody>
+</table>
+
+<br>
+<a href="/index.html">Return to Home</a>
+
+<script>
+    const API = "http://localhost:8080/api/resources";
+
+    function load() {
+        $.get(API, function(data) {
+            let html = "";
+            for(let r of data) {
+                html += '<tr>';
+                html += '<td>' + (r.id || '') + '</td>';
+                html += '<td>' + (r.name || '') + '</td>';
+                html += '<td>' + (r.type || '') + '</td>';
+                html += '<td>' + (r.phoneNumber || '') + '</td>';
+                html += '<td>' + (r.website || '') + '</td>';
+                html += '<td><button onclick="edit(' + r.id + ')">Edit</button> <button onclick="del(' + r.id + ')">Delete</button></td>';
+                html += '</tr>';
+            }
+            document.getElementById("resourcesTableBody").innerHTML = html;
+        });
+    }
+
+    function resetForm() {
+        document.getElementById("editId").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("type").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("website").value = "";
+        document.getElementById("saveBtn").innerHTML = "Add Resource";
+    }
+
+    document.getElementById("saveBtn").onclick = function() {
+        let id = document.getElementById("editId").value;
+        let item = {
+            name: document.getElementById("name").value,
+            type: document.getElementById("type").value,
+            phoneNumber: document.getElementById("phone").value,
+            website: document.getElementById("website").value
+        };
+
+        if(id) {
+            fetch(API + "/" + id, {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(item)
+            }).then(function() {
+                resetForm();
+                load();
+                alert("Resource updated!");
+            });
+        } else {
+            fetch(API, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(item)
+            }).then(function() {
+                resetForm();
+                load();
+                alert("Resource added!");
+            });
+        }
+    };
+
+    window.edit = function(id) {
+        fetch(API + "/" + id)
+            .then(function(response) { return response.json(); })
+            .then(function(r) {
+                document.getElementById("editId").value = r.id;
+                document.getElementById("name").value = r.name;
+                document.getElementById("type").value = r.type;
+                document.getElementById("phone").value = r.phoneNumber;
+                document.getElementById("website").value = r.website;
+                document.getElementById("saveBtn").innerHTML = "Update Resource";
+            });
+    };
+
+    window.del = function(id) {
+        if(confirm("Delete this resource?")) {
+            fetch(API + "/" + id, { method: "DELETE" })
+                .then(function() {
+                    load();
+                    alert("Resource deleted!");
+                });
+        }
+    };
+
+    window.doSearch = function() {
+        let q = document.getElementById("search").value;
+        if(q) {
+            fetch(API + "/search?name=" + q)
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    let html = "";
+                    for(let r of data) {
+                        html += '<tr>';
+                        html += '<td>' + (r.id || '') + '</td>';
+                        html += '<td>' + (r.name || '') + '</td>';
+                        html += '<td>' + (r.type || '') + '</td>';
+                        html += '<td>' + (r.phoneNumber || '') + '</td>';
+                        html += '<td>' + (r.website || '') + '</td>';
+                        html += '<td><button onclick="edit(' + r.id + ')">Edit</button> <button onclick="del(' + r.id + ')">Delete</button></td>';
+                        html += '</tr>';
+                    }
+                    document.getElementById("resourcesTableBody").innerHTML = html;
+                });
+        } else {
+            load();
+        }
+    };
+
+    load();
+</script>
+</body>
+</html>
