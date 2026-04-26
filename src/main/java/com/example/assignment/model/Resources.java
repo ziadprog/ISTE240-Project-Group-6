@@ -1,3 +1,6 @@
+//Ziad Abdelrahman
+//764002985
+
 package com.example.assignment.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
