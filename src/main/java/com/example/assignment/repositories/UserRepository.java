@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-
+//Shahid Rizwan-415004364
 public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAll();

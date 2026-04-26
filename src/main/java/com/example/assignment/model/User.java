@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
-
+//Shahid Rizwan-415004364
 @Entity
 public class User {
 

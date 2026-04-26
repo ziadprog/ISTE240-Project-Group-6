@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+//Shahid Rizwan-415004364
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
 
     List<Diary> findByUserId(Long userId);

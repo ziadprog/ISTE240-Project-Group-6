@@ -1,5 +1,5 @@
 package com.example.assignment.model;
-
+//Shahid Rizwan-415004364
 import jakarta.persistence.*;
 
 @Entity
